@@ -11,21 +11,30 @@ object Spark_to_smile extends LazyLogging {
     try {
       val data = df.collect().map(_.toSeq).map(_.toArray)
 
-      val d = data.map(_.map(_.asInstanceOf[Double]))
+      val d = data.map(_.map {
+        case e: Int => e.toDouble
+        case e: Float => e.toDouble
+        case e: Long => e.toDouble
+        case e: Short => e.toDouble
+        case e: Double => e
+        case e: String => e.toDouble
+        case x => throw new Exception(s"${x.getClass.toString} is not a compatible data type")
+      })
       /**
        * UNUSED But could be interesting if data was not force collected as 2-dim Double Array
        */
-      /*  val cols = schema.map { field =>
-          field.dataType match {
-            case org.apache.spark.sql.types.DoubleType => new StructField(field.name, DataTypes.DoubleType)
-            case org.apache.spark.sql.types.FloatType => new StructField(field.name, DataTypes.FloatType)
-            case org.apache.spark.sql.types.LongType => new StructField(field.name, DataTypes.LongType)
-            case org.apache.spark.sql.types.IntegerType => new StructField(field.name, DataTypes.IntegerType)
-            case org.apache.spark.sql.types.ShortType => new StructField(field.name, DataTypes.ShortType)
-            case _ => new StructField(field.name, DataTypes.ObjectType)
-          }
-        }.toList*/
-
+      /*
+    val cols = df.schema.map { field =>
+      field.dataType match {
+        case org.apache.spark.sql.types.DoubleType => new StructField(field.name, DataTypes.DoubleType)
+        case org.apache.spark.sql.types.FloatType => new StructField(field.name, DataTypes.FloatType)
+        case org.apache.spark.sql.types.LongType => new StructField(field.name, DataTypes.LongType)
+        case org.apache.spark.sql.types.IntegerType => new StructField(field.name, DataTypes.IntegerType)
+        case org.apache.spark.sql.types.ShortType => new StructField(field.name, DataTypes.ShortType)
+        case _ => new StructField(field.name, DataTypes.ObjectType)
+      }
+    }.toList
+*/
       val columns = df.columns.map { c =>
         new StructField(c, DataTypes.DoubleType)
       }.toList
@@ -47,7 +56,7 @@ object Spark_to_smile extends LazyLogging {
       }
       case e: Exception => {
         logger.error(s" ERROR WHILE CREATING SMILE DATAFRAME : ${e.getMessage}")
-        throw(e)
+        throw (e)
       }
     }
   }

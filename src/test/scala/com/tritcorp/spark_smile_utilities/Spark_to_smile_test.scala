@@ -14,22 +14,22 @@ class Spark_to_smile_test extends FlatSpecTest {
 
     val df =
       Seq(
-        (1.0, 2.0, 3.0),
-        (1.1, -2.4, 0.5)
+        (1, 2.0f, "3.0"),
+        (1, -2.4f, "0.5")
       ).toDF("A", "B", "C")
 
-    println(df.get.schema())
+    println(df.get.columnIndex("A"))
   }
 
   "Spark DataFrame" must " not be converted to smile dataframe with non numeric columns" in {
-    assertThrows[ClassCastException] {
+    assertThrows[Exception] {
       val df =
         Seq(
-          (1.0, 2.0, "3.0"),
-          (1.1, -2.4, "0.5")
+          (1.0, 2.0, Seq()),
+          (1.1, -2.4, Seq())
         ).toDF("A", "B", "C")
 
-      println(df.get.schema())
+      println(df.get.columnIndex("A"))
     }
   }
 
