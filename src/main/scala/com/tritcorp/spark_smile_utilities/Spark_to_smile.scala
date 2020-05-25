@@ -1,26 +1,44 @@
 package com.tritcorp.spark_smile_utilities
 
 import com.typesafe.scalalogging.LazyLogging
-import smile.data.{Attribute, AttributeDataset, DataFrame, NumericAttribute}
-
+import smile.data.`type`.{DataTypes, StructField, StructType}
+import smile.data.{DataFrame, Tuple}
+import scala.collection.JavaConverters._
 
 object Spark_to_smile extends LazyLogging {
 
   implicit def sparkDF_to_smileDF(df: org.apache.spark.sql.DataFrame): Option[smile.data.DataFrame] = {
     try {
-      val attr = df.columns.map(new NumericAttribute(_).asInstanceOf[Attribute])
+      val data = df.collect().map(_.toSeq).map(_.toArray)
 
-      val attrx = attr.tail
-      val resp = attr.head
+      val d = data.map(_.map(_.asInstanceOf[Double]))
+      /**
+       * UNUSED But could be interesting if data was not force collected as 2-dim Double Array
+       */
+      /*  val cols = schema.map { field =>
+          field.dataType match {
+            case org.apache.spark.sql.types.DoubleType => new StructField(field.name, DataTypes.DoubleType)
+            case org.apache.spark.sql.types.FloatType => new StructField(field.name, DataTypes.FloatType)
+            case org.apache.spark.sql.types.LongType => new StructField(field.name, DataTypes.LongType)
+            case org.apache.spark.sql.types.IntegerType => new StructField(field.name, DataTypes.IntegerType)
+            case org.apache.spark.sql.types.ShortType => new StructField(field.name, DataTypes.ShortType)
+            case _ => new StructField(field.name, DataTypes.ObjectType)
+          }
+        }.toList*/
 
-      val array = df.collect.map(_.toSeq.toArray.map(_.asInstanceOf[Double])).map(x => (x.head, x.tail))
+      val columns = df.columns.map { c =>
+        new StructField(c, DataTypes.DoubleType)
+      }.toList
 
-      val y = array.map(_._1)
-      val x = array.map(_._2)
+      val struc = new StructType(columns.asJava)
 
-      val ads = new AttributeDataset("tamair", attrx, x, resp, y)
+      val tuples = d.map {
+        Tuple.of(_, struc)
+      }.toList
 
-      Some(DataFrame(ads))
+      val dtf = DataFrame.of(tuples.asJava)
+
+      Some(dtf)
     }
     catch {
       case e: ClassCastException => {

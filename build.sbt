@@ -18,7 +18,7 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-mllib" % "2.4.5",
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
   "com.typesafe" % "config" % "1.4.0",
-  "com.github.haifengl" %% "smile-scala" % "1.5.2"
+  "com.github.haifengl" %% "smile-scala" % "2.4.0"
 )
 test in assembly := {}
 assemblyMergeStrategy in assembly := {

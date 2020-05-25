@@ -18,7 +18,7 @@ class Spark_to_smile_test extends FlatSpecTest {
         (1.1, -2.4, 0.5)
       ).toDF("A", "B", "C")
 
-    println(df.get.response)
+    println(df.get.schema())
   }
 
   "Spark DataFrame" must " not be converted to smile dataframe with non numeric columns" in {
@@ -29,7 +29,7 @@ class Spark_to_smile_test extends FlatSpecTest {
           (1.1, -2.4, "0.5")
         ).toDF("A", "B", "C")
 
-      println(df.get.response)
+      println(df.get.schema())
     }
   }
 
