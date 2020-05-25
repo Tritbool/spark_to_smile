@@ -4,10 +4,10 @@ name := "spark_smile_utilities"
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 resolvers += Resolver.mavenLocal
 version := "0.1"
-scalaVersion := "2.11.12"
+scalaVersion := "2.12.4"
 scalacOptions += "-target:jvm-1.8"
 //crossScalaVersions := Seq("2.11.12", "2.12.10"),
-organization := "com.tritcorp.spark_smile_utilities"
+organization := "com.tritcorp.exp"
 organizationName := "Gauthier LYAN"
 
 libraryDependencies ++= Seq(
