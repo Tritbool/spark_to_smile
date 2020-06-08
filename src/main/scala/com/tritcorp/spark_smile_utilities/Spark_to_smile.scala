@@ -54,9 +54,14 @@ object Spark_to_smile extends LazyLogging {
         logger.error(s"ONLY NUMERIC DATAFRAMES ARE CONVERTIBLE")
         throw e
       }
+      case idx : IndexOutOfBoundsException=>{
+        logger.error(s"THERE IS NO DATA IN THIS DATAFRAME")
+        throw idx
+      }
       case e: Exception => {
         logger.error(s" ERROR WHILE CREATING SMILE DATAFRAME : ${e.getMessage}")
-        throw (e)
+        e.printStackTrace()
+        throw e
       }
     }
   }
